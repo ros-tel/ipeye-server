@@ -1,0 +1,22 @@
+listen:
+  api: 0.0.0.0:8111
+  server: 0.0.0.0:5511
+
+recorder:
+  # Корневая директория для записей
+  base_dir: /home/vlad/records
+  # Пусть к ffmpeg
+  cmd: /usr/bin/ffmpeg
+  # Параметры моманды ffmpeg к ним добавятся -rtsp_transport tcp -i 'rtsp://соответствующий_стрим'
+  params: -abort_on empty_output -v info -nostats -y -flags -global_header -analyzeduration 10000000 -probesize 10000000 -stimeout 5000000 -hide_banner -c copy -f hls -segment_format mpegts -hls_list_size 10 -hls_flags delete_segments -sc_threshold 0 -hls_time 6 -use_localtime 1 -hls_segment_filename %Y-%m-%d-%H-%M-%S.ts stream.m3u8
+
+balancer:
+  servers:
+    local:
+      host: 127.0.0.1
+      port: 5511
+
+  routes:
+    # cloud_id: server (из balancer->servers)
+    default: local
+    203dc4de-19de-447e-8ae9-d87a09165176: local
